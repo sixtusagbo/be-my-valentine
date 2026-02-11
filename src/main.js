@@ -4,6 +4,7 @@ const FLEE_DISTANCE = 150
 const FLEE_TOUCH_RADIUS = 120
 const YES_GLOW_DISTANCE = 200
 const hearts = ['💕', '💖', '💗', '💘', '💝', '❤️', '💓', '💞']
+const confettiColors = ['#ff6b9d', '#ff85b3', '#c44569', '#ffb6c1', '#ff1493', '#fff', '#ffd700']
 
 let pointerX = -1000
 let pointerY = -1000
@@ -231,7 +232,7 @@ function showYesScreen() {
       <div class="yes-screen">
         <div class="yes-heart">💖</div>
         <div class="yes-text">Yay! I knew you'd say yes!</div>
-        <div class="yes-subtext">You just made me the happiest person ever</div>
+        <div class="yes-subtext">My heart is doing backflips right now</div>
       </div>
     `
 
@@ -242,8 +243,35 @@ function showYesScreen() {
     }
     setInterval(() => createFloatingHeart(container), 600)
 
+    // Continuous confetti bursts
+    spawnConfetti()
+    setInterval(spawnConfetti, 2500)
+
     explosion.remove()
   }, 800)
+}
+
+function spawnConfetti() {
+  const container = document.createElement('div')
+  container.className = 'confetti-burst'
+  document.body.appendChild(container)
+
+  for (let i = 0; i < 40; i++) {
+    const piece = document.createElement('span')
+    piece.className = 'confetti-piece'
+    const color = confettiColors[Math.floor(Math.random() * confettiColors.length)]
+    piece.style.setProperty('--color', color)
+    piece.style.left = `${30 + Math.random() * 40}%`
+    piece.style.top = '-5%'
+    piece.style.setProperty('--drift', `${Math.random() * 200 - 100}px`)
+    piece.style.setProperty('--fall', `${window.innerHeight + 50}px`)
+    piece.style.setProperty('--spin', `${Math.random() * 720 - 360}deg`)
+    piece.style.animationDuration = `${1.5 + Math.random() * 2}s`
+    piece.style.animationDelay = `${Math.random() * 0.8}s`
+    container.appendChild(piece)
+  }
+
+  setTimeout(() => container.remove(), 4500)
 }
 
 init()

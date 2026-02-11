@@ -236,3 +236,33 @@ body {
     opacity: 0;
   }
 }
+
+/* Confetti */
+.confetti-burst {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 101;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 14px;
+  background: var(--color);
+  border-radius: 2px;
+  opacity: 0;
+  animation: confettiFall ease-out forwards;
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(var(--fall)) translateX(var(--drift)) rotate(var(--spin)) scale(0.4);
+    opacity: 0;
+  }
+}
