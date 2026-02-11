@@ -184,15 +184,17 @@ body {
 
 .yes-heart {
   font-size: clamp(80px, 20vw, 140px);
-  animation: heartBeat 1s ease-in-out infinite;
+  animation: heartBackflip 1.6s ease-in-out infinite;
+  display: inline-block;
 }
 
-@keyframes heartBeat {
-  0%, 100% { transform: scale(1); }
-  15% { transform: scale(1.15); }
-  30% { transform: scale(1); }
-  45% { transform: scale(1.1); }
-  60% { transform: scale(1); }
+@keyframes heartBackflip {
+  0% { transform: scale(1) rotateX(0deg); }
+  20% { transform: scale(1.15) rotateX(0deg); }
+  30% { transform: scale(1.15) translateY(-20px) rotateX(0deg); }
+  65% { transform: scale(1.15) translateY(-20px) rotateX(360deg); }
+  80% { transform: scale(1.1) translateY(0) rotateX(360deg); }
+  100% { transform: scale(1) rotateX(360deg); }
 }
 
 .yes-text {
