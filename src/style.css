@@ -184,16 +184,17 @@ body {
 
 .yes-heart {
   font-size: clamp(80px, 20vw, 140px);
-  animation: heartBackflip 1.6s ease-in-out infinite;
+  animation: heartBackflip 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   display: inline-block;
 }
 
 @keyframes heartBackflip {
   0% { transform: scale(1) rotateX(0deg); }
-  20% { transform: scale(1.15) rotateX(0deg); }
-  30% { transform: scale(1.15) translateY(-20px) rotateX(0deg); }
-  65% { transform: scale(1.15) translateY(-20px) rotateX(360deg); }
-  80% { transform: scale(1.1) translateY(0) rotateX(360deg); }
+  10% { transform: scale(1.1) rotateX(0deg); }
+  20% { transform: scale(1.12) translateY(-25px) rotateX(0deg); }
+  55% { transform: scale(1.12) translateY(-25px) rotateX(360deg); }
+  70% { transform: scale(1.05) translateY(0) rotateX(360deg); }
+  85% { transform: scale(1) rotateX(360deg); }
   100% { transform: scale(1) rotateX(360deg); }
 }
 
