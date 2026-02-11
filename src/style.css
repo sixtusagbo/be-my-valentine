@@ -1,0 +1,238 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Quicksand:wght@400;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+  background: #1a0a1e;
+  font-family: 'Quicksand', sans-serif;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Floating hearts background */
+.heart-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.floating-heart {
+  position: absolute;
+  bottom: -40px;
+  opacity: 0;
+  animation: floatUp linear infinite;
+  font-size: 20px;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(-110dvh) rotate(360deg) scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* Main content */
+.content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.question {
+  font-family: 'Dancing Script', cursive;
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  color: #ff6b9d;
+  margin-bottom: 50px;
+  text-shadow: 0 0 30px rgba(255, 107, 157, 0.4);
+  animation: fadeInDown 1s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.buttons {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 1.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Yes button */
+.btn-yes {
+  padding: 16px 48px;
+  font-size: 1.3rem;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
+  border: none;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #ff6b9d, #c44569);
+  color: white;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 20px rgba(255, 107, 157, 0.4);
+  z-index: 10;
+}
+
+.btn-yes:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 30px rgba(255, 107, 157, 0.6);
+}
+
+.btn-yes.nearby {
+  animation: yesGlow 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes yesGlow {
+  from {
+    transform: scale(1);
+    box-shadow: 0 4px 20px rgba(255, 107, 157, 0.4);
+  }
+  to {
+    transform: scale(1.12);
+    box-shadow:
+      0 6px 40px rgba(255, 107, 157, 0.7),
+      0 0 60px rgba(255, 107, 157, 0.3);
+  }
+}
+
+/* No button */
+.btn-no {
+  padding: 16px 48px;
+  font-size: 1.3rem;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  position: fixed;
+  transition: none;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+/* Yes screen */
+.yes-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #1a0a1e;
+  animation: yesReveal 0.6s ease-out;
+}
+
+@keyframes yesReveal {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.yes-heart {
+  font-size: clamp(80px, 20vw, 140px);
+  animation: heartBeat 1s ease-in-out infinite;
+}
+
+@keyframes heartBeat {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.15); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.1); }
+  60% { transform: scale(1); }
+}
+
+.yes-text {
+  font-family: 'Dancing Script', cursive;
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  color: #ff6b9d;
+  margin-top: 20px;
+  text-shadow: 0 0 30px rgba(255, 107, 157, 0.5);
+  text-align: center;
+  padding: 0 20px;
+}
+
+.yes-subtext {
+  font-family: 'Quicksand', sans-serif;
+  font-size: clamp(1rem, 3vw, 1.4rem);
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 16px;
+  animation: fadeIn 2s ease-out 0.5s both;
+}
+
+/* Heart explosion on yes */
+.heart-explosion {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 99;
+}
+
+.explosion-heart {
+  position: absolute;
+  animation: explode 1.5s ease-out forwards;
+}
+
+@keyframes explode {
+  0% {
+    transform: translate(0, 0) scale(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(var(--rot));
+    opacity: 0;
+  }
+}
