@@ -1,6 +1,7 @@
 import './style.css'
 
 const FLEE_DISTANCE = 150
+const FLEE_TOUCH_RADIUS = 120
 const YES_GLOW_DISTANCE = 200
 const hearts = ['💕', '💖', '💗', '💘', '💝', '❤️', '💓', '💞']
 
@@ -41,20 +42,29 @@ function init() {
     pointerY = e.touches[0].clientY
   }, { passive: true })
 
-  // Yes button click
+  // On mobile, touchstart is the earliest signal we get.
+  // Update pointer + immediately check if touch landed near the No button.
+  document.addEventListener('touchstart', (e) => {
+    pointerX = e.touches[0].clientX
+    pointerY = e.touches[0].clientY
+    immediateFleeCheck(btnNo)
+  }, { passive: true })
+
+  // Yes button
   btnYes.addEventListener('click', showYesScreen)
   btnYes.addEventListener('touchend', (e) => {
     e.preventDefault()
     showYesScreen()
   })
 
-  // No button should flee - prevent click
-  btnNo.addEventListener('click', (e) => {
+  // No button: flee on any interaction.
+  // touchstart with preventDefault stops the tap from ever registering on mobile.
+  btnNo.addEventListener('touchstart', (e) => {
     e.preventDefault()
     fleeNoButton(btnNo)
   })
 
-  btnNo.addEventListener('touchend', (e) => {
+  btnNo.addEventListener('click', (e) => {
     e.preventDefault()
     fleeNoButton(btnNo)
   })
@@ -64,15 +74,28 @@ function init() {
 }
 
 function placeNoButton(btn) {
-  const rect = btn.getBoundingClientRect()
   const yesBtn = document.getElementById('btnYes')
   const yesRect = yesBtn.getBoundingClientRect()
+  const bw = btn.offsetWidth
+  const bh = btn.offsetHeight
+  const pad = 20
 
-  noX = yesRect.right + 30
-  noY = yesRect.top + (yesRect.height / 2) - (rect.height / 2)
+  // Place to the right of Yes, clamped to viewport
+  noX = Math.min(yesRect.right + 24, window.innerWidth - bw - pad)
+  noY = yesRect.top + (yesRect.height / 2) - (bh / 2)
   btn.style.left = `${noX}px`
   btn.style.top = `${noY}px`
   noPlaced = true
+}
+
+function immediateFleeCheck(btn) {
+  if (!noPlaced) return
+  const noCenterX = noX + btn.offsetWidth / 2
+  const noCenterY = noY + btn.offsetHeight / 2
+  const dist = Math.hypot(pointerX - noCenterX, pointerY - noCenterY)
+  if (dist < FLEE_TOUCH_RADIUS) {
+    fleeNoButton(btn)
+  }
 }
 
 function fleeNoButton(btn) {
@@ -199,6 +222,9 @@ function showYesScreen() {
 
   document.body.appendChild(explosion)
 
+  // Haptic feedback on supported devices
+  if (navigator.vibrate) navigator.vibrate(100)
+
   setTimeout(() => {
     app.innerHTML = `
       <div class="heart-bg" id="heartBg"></div>
@@ -208,7 +234,14 @@ function showYesScreen() {
         <div class="yes-subtext">You just made me the happiest person ever</div>
       </div>
     `
-    spawnFloatingHearts()
+
+    // Intense heart rain for celebration
+    const container = document.getElementById('heartBg')
+    for (let i = 0; i < 25; i++) {
+      setTimeout(() => createFloatingHeart(container), i * 150)
+    }
+    setInterval(() => createFloatingHeart(container), 600)
+
     explosion.remove()
   }, 800)
 }
