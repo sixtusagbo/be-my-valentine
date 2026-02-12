@@ -124,7 +124,11 @@ function showEnvelope(onOpen) {
   const letter = document.getElementById('letter')
   const hint = document.getElementById('envelopeHint')
 
+  let opened = false
   function open() {
+    if (opened) return
+    opened = true
+
     // Warm up audio context on user gesture
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)()
 
@@ -140,8 +144,22 @@ function showEnvelope(onOpen) {
     }, 800)
   }
 
-  scene.addEventListener('click', open, { once: true })
-  scene.addEventListener('touchend', (e) => { e.preventDefault(); open() }, { once: true })
+  // Only open on tap (short touch, no movement)
+  let touchStartY = 0
+  let touchStartTime = 0
+  scene.addEventListener('touchstart', (e) => {
+    touchStartY = e.touches[0].clientY
+    touchStartTime = Date.now()
+  }, { passive: true })
+  scene.addEventListener('touchend', (e) => {
+    const moved = Math.abs(e.changedTouches[0].clientY - touchStartY)
+    const elapsed = Date.now() - touchStartTime
+    if (moved < 15 && elapsed < 300) {
+      e.preventDefault()
+      open()
+    }
+  })
+  scene.addEventListener('click', open)
 }
 
 function init() {
