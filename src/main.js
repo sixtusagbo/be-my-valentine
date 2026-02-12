@@ -12,25 +12,64 @@ let noX = 0
 let noY = 0
 let noPlaced = false
 
+// Web Audio typing sound
+let audioCtx
+function playTypeSound() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+  const osc = audioCtx.createOscillator()
+  const gain = audioCtx.createGain()
+  osc.connect(gain)
+  gain.connect(audioCtx.destination)
+  osc.frequency.value = 600 + Math.random() * 400
+  osc.type = 'sine'
+  gain.gain.setValueAtTime(0.06, audioCtx.currentTime)
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08)
+  osc.start()
+  osc.stop(audioCtx.currentTime + 0.08)
+}
+
+function typeText(element, text, callback) {
+  let i = 0
+  element.textContent = ''
+  const interval = setInterval(() => {
+    element.textContent += text[i]
+    playTypeSound()
+    i++
+    if (i >= text.length) {
+      clearInterval(interval)
+      element.classList.add('typed')
+      if (callback) setTimeout(callback, 300)
+    }
+  }, 80)
+}
+
 function init() {
   const app = document.querySelector('#app')
 
   app.innerHTML = `
     <div class="heart-bg" id="heartBg"></div>
     <div class="content">
-      <h1 class="question">Will you be my Valentine?</h1>
-      <div class="buttons">
+      <h1 class="question"></h1>
+      <div class="buttons hidden" id="buttons">
         <button class="btn-yes" id="btnYes">Yes!</button>
       </div>
     </div>
-    <button class="btn-no" id="btnNo">No</button>
+    <button class="btn-no hidden" id="btnNo">No</button>
   `
 
   const btnYes = document.getElementById('btnYes')
   const btnNo = document.getElementById('btnNo')
+  const question = document.querySelector('.question')
+  const buttons = document.getElementById('buttons')
 
-  placeNoButton(btnNo)
   spawnFloatingHearts()
+
+  // Type out the question, then reveal buttons
+  typeText(question, 'Will you be my Valentine?', () => {
+    buttons.classList.remove('hidden')
+    btnNo.classList.remove('hidden')
+    placeNoButton(btnNo)
+  })
 
   // Track pointer position globally
   document.addEventListener('pointermove', (e) => {
@@ -231,10 +270,14 @@ function showYesScreen() {
       <div class="heart-bg" id="heartBg"></div>
       <div class="yes-screen">
         <div class="yes-heart">💖</div>
-        <div class="yes-text">Yay! I knew you'd say yes!</div>
-        <div class="yes-subtext">My heart is doing backflips right now</div>
+        <div class="yes-text"></div>
+        <div class="yes-subtext"></div>
       </div>
     `
+
+    typeText(document.querySelector('.yes-text'), 'Yay! I knew you\'d say yes!', () => {
+      typeText(document.querySelector('.yes-subtext'), 'My heart is doing backflips right now')
+    })
 
     // Intense heart rain for celebration
     const container = document.getElementById('heartBg')

@@ -75,7 +75,28 @@ body {
   color: #ff6b9d;
   margin-bottom: 50px;
   text-shadow: 0 0 30px rgba(255, 107, 157, 0.4);
-  animation: fadeInDown 1s ease-out;
+  min-height: 1.2em;
+}
+
+.question::after {
+  content: '|';
+  animation: blink 0.6s step-end infinite;
+  color: #ff6b9d;
+  margin-left: 2px;
+}
+
+.question.typed::after {
+  display: none;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 @keyframes fadeInDown {
@@ -94,7 +115,7 @@ body {
   gap: 30px;
   justify-content: center;
   align-items: center;
-  animation: fadeIn 1.5s ease-out;
+  transition: opacity 0.5s ease-out;
 }
 
 @keyframes fadeIn {
@@ -153,7 +174,7 @@ body {
   color: rgba(255, 255, 255, 0.5);
   cursor: pointer;
   position: fixed;
-  transition: left 0.12s ease-out, top 0.12s ease-out;
+  transition: left 0.12s ease-out, top 0.12s ease-out, opacity 0.5s ease-out;
   z-index: 10;
   white-space: nowrap;
 }
@@ -213,7 +234,6 @@ body {
   font-size: clamp(1rem, 3vw, 1.4rem);
   color: rgba(255, 255, 255, 0.6);
   margin-top: 16px;
-  animation: fadeIn 2s ease-out 0.5s both;
 }
 
 /* Heart explosion on yes */
