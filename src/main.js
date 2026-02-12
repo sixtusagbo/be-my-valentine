@@ -24,8 +24,8 @@ function playTypeSound() {
   gain.connect(audioCtx.destination)
   osc.frequency.value = 600 + Math.random() * 400
   osc.type = 'sine'
-  gain.gain.setValueAtTime(0.06, audioCtx.currentTime)
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08)
+  gain.gain.setValueAtTime(1.0, audioCtx.currentTime)
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1)
   osc.start()
   osc.stop(audioCtx.currentTime + 0.08)
 }
