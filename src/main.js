@@ -11,6 +11,8 @@ let pointerY = -1000
 let noX = 0
 let noY = 0
 let noPlaced = false
+let noScale = 1
+let yesScale = 1
 
 // Web Audio typing sound
 let audioCtx
@@ -200,6 +202,13 @@ function fleeNoButton(btn) {
   const bw = btn.offsetWidth
   const bh = btn.offsetHeight
   const pad = 20
+
+  // Shrink No, grow Yes
+  noScale = Math.max(0.15, noScale * 0.75)
+  yesScale = Math.min(1.6, yesScale + 0.08)
+  btn.style.transform = `scale(${noScale})`
+  const yesBtn = document.getElementById('btnYes')
+  yesBtn.style.transform = `scale(${yesScale})`
 
   // Pick a random spot far from pointer
   let newX, newY, dist

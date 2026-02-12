@@ -174,7 +174,7 @@ body {
   color: rgba(255, 255, 255, 0.8);
   cursor: pointer;
   position: fixed;
-  transition: left 0.12s ease-out, top 0.12s ease-out, opacity 0.5s ease-out;
+  transition: left 0.12s ease-out, top 0.12s ease-out, opacity 0.5s ease-out, transform 0.3s ease-out;
   z-index: 10;
   white-space: nowrap;
 }
