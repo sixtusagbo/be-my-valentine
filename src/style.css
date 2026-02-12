@@ -297,7 +297,7 @@ body {
 
 .yes-heart {
   font-size: clamp(80px, 20vw, 140px);
-  animation: heartBackflip 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: heartBackflip 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   display: inline-block;
 }
 
