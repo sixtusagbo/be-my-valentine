@@ -308,3 +308,42 @@ body {
     opacity: 0;
   }
 }
+
+/* Firefly particles */
+.firefly-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.firefly {
+  position: absolute;
+  border-radius: 50%;
+  background: hsl(var(--hue));
+  box-shadow: 0 0 6px 2px hsl(var(--hue) / 0.6), 0 0 14px 4px hsl(var(--hue) / 0.3);
+  opacity: 0;
+  animation: fireflyDrift ease-in-out infinite;
+}
+
+@keyframes fireflyDrift {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate(var(--dx), var(--dy));
+    opacity: 0.4;
+  }
+  80% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(calc(var(--dx) * -0.5), calc(var(--dy) * -0.5));
+    opacity: 0;
+  }
+}

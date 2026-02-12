@@ -69,6 +69,36 @@ function initHeartTrail() {
   }, { passive: true })
 }
 
+// Firefly particles
+function initFireflies() {
+  const container = document.createElement('div')
+  container.className = 'firefly-container'
+  document.body.appendChild(container)
+
+  function spawnFirefly() {
+    const fly = document.createElement('div')
+    fly.className = 'firefly'
+    fly.style.left = `${Math.random() * 100}%`
+    fly.style.top = `${Math.random() * 100}%`
+    const size = 2 + Math.random() * 4
+    fly.style.width = `${size}px`
+    fly.style.height = `${size}px`
+    const hue = Math.random() > 0.5 ? `330, 80%, 70%` : `45, 100%, 70%`
+    fly.style.setProperty('--hue', hue)
+    fly.style.setProperty('--dx', `${Math.random() * 120 - 60}px`)
+    fly.style.setProperty('--dy', `${Math.random() * 120 - 60}px`)
+    fly.style.animationDuration = `${4 + Math.random() * 6}s`
+    fly.style.animationDelay = `${Math.random() * 3}s`
+    container.appendChild(fly)
+    setTimeout(() => fly.remove(), 12000)
+  }
+
+  for (let i = 0; i < 20; i++) {
+    setTimeout(() => spawnFirefly(), i * 400)
+  }
+  setInterval(spawnFirefly, 800)
+}
+
 function init() {
   const app = document.querySelector('#app')
 
@@ -88,6 +118,7 @@ function init() {
   const buttons = document.getElementById('buttons')
 
   initHeartTrail()
+  initFireflies()
 
   // Type out the question, then reveal buttons
   typeText(question, 'Will you be my Valentine?', () => {
