@@ -101,74 +101,133 @@ function initFireflies() {
   setInterval(spawnFirefly, 800)
 }
 
-function init() {
+function showEnvelope(onOpen) {
   const app = document.querySelector('#app')
-
   app.innerHTML = `
-    <div class="content">
-      <h1 class="question"></h1>
-      <div class="buttons hidden" id="buttons">
-        <button class="btn-yes" id="btnYes">Yes!</button>
+    <div class="envelope-scene" id="envelopeScene">
+      <div class="envelope" id="envelope">
+        <div class="envelope-back"></div>
+        <div class="envelope-letter" id="letter">
+          <span>For You</span>
+        </div>
+        <div class="envelope-front"></div>
+        <div class="envelope-flap" id="flap"></div>
       </div>
+      <div class="envelope-hint" id="envelopeHint">Swipe up to open</div>
     </div>
-    <button class="btn-no hidden" id="btnNo">No</button>
   `
 
-  const btnYes = document.getElementById('btnYes')
-  const btnNo = document.getElementById('btnNo')
-  const question = document.querySelector('.question')
-  const buttons = document.getElementById('buttons')
-
-  initHeartTrail()
   initFireflies()
 
-  // Type out the question, then reveal buttons
-  typeText(question, 'Will you be my Valentine?', () => {
-    buttons.classList.remove('hidden')
-    btnNo.classList.remove('hidden')
-    placeNoButton(btnNo)
+  const scene = document.getElementById('envelopeScene')
+  const flap = document.getElementById('flap')
+  const letter = document.getElementById('letter')
+  const hint = document.getElementById('envelopeHint')
+  let startY = 0
+  let progress = 0
+  let opened = false
+
+  function onStart(y) {
+    startY = y
+  }
+
+  function onMove(y) {
+    if (opened) return
+    const delta = startY - y
+    progress = Math.max(0, Math.min(1, delta / 150))
+    flap.style.transform = `rotateX(${progress * 180}deg)`
+    letter.style.transform = `translateY(${-progress * 80}%)`
+    if (progress > 0.1) hint.style.opacity = '0'
+  }
+
+  function onEnd() {
+    if (opened) return
+    if (progress > 0.5) {
+      opened = true
+      flap.style.transform = 'rotateX(180deg)'
+      letter.style.transform = 'translateY(-80%)'
+      setTimeout(() => {
+        scene.classList.add('envelope-exit')
+        setTimeout(onOpen, 600)
+      }, 400)
+    } else {
+      flap.style.transform = 'rotateX(0deg)'
+      letter.style.transform = 'translateY(0)'
+      hint.style.opacity = '1'
+    }
+  }
+
+  scene.addEventListener('pointerdown', (e) => onStart(e.clientY))
+  scene.addEventListener('pointermove', (e) => onMove(e.clientY))
+  scene.addEventListener('pointerup', onEnd)
+  scene.addEventListener('touchstart', (e) => onStart(e.touches[0].clientY), { passive: true })
+  scene.addEventListener('touchmove', (e) => onMove(e.touches[0].clientY), { passive: true })
+  scene.addEventListener('touchend', onEnd)
+}
+
+function init() {
+  initHeartTrail()
+
+  showEnvelope(() => {
+    const app = document.querySelector('#app')
+
+    app.innerHTML = `
+      <div class="content">
+        <h1 class="question"></h1>
+        <div class="buttons hidden" id="buttons">
+          <button class="btn-yes" id="btnYes">Yes!</button>
+        </div>
+      </div>
+      <button class="btn-no hidden" id="btnNo">No</button>
+    `
+
+    const btnYes = document.getElementById('btnYes')
+    const btnNo = document.getElementById('btnNo')
+    const question = document.querySelector('.question')
+    const buttons = document.getElementById('buttons')
+
+    // Type out the question, then reveal buttons
+    typeText(question, 'Will you be my Valentine?', () => {
+      buttons.classList.remove('hidden')
+      btnNo.classList.remove('hidden')
+      placeNoButton(btnNo)
+    })
+
+    // Track pointer position globally
+    document.addEventListener('pointermove', (e) => {
+      pointerX = e.clientX
+      pointerY = e.clientY
+    })
+
+    document.addEventListener('touchmove', (e) => {
+      pointerX = e.touches[0].clientX
+      pointerY = e.touches[0].clientY
+    }, { passive: true })
+
+    document.addEventListener('touchstart', (e) => {
+      pointerX = e.touches[0].clientX
+      pointerY = e.touches[0].clientY
+      immediateFleeCheck(btnNo)
+    }, { passive: true })
+
+    btnYes.addEventListener('click', showYesScreen)
+    btnYes.addEventListener('touchend', (e) => {
+      e.preventDefault()
+      showYesScreen()
+    })
+
+    btnNo.addEventListener('touchstart', (e) => {
+      e.preventDefault()
+      fleeNoButton(btnNo)
+    })
+
+    btnNo.addEventListener('click', (e) => {
+      e.preventDefault()
+      fleeNoButton(btnNo)
+    })
+
+    requestAnimationFrame(() => gameLoop(btnYes, btnNo))
   })
-
-  // Track pointer position globally
-  document.addEventListener('pointermove', (e) => {
-    pointerX = e.clientX
-    pointerY = e.clientY
-  })
-
-  document.addEventListener('touchmove', (e) => {
-    pointerX = e.touches[0].clientX
-    pointerY = e.touches[0].clientY
-  }, { passive: true })
-
-  // On mobile, touchstart is the earliest signal we get.
-  // Update pointer + immediately check if touch landed near the No button.
-  document.addEventListener('touchstart', (e) => {
-    pointerX = e.touches[0].clientX
-    pointerY = e.touches[0].clientY
-    immediateFleeCheck(btnNo)
-  }, { passive: true })
-
-  // Yes button
-  btnYes.addEventListener('click', showYesScreen)
-  btnYes.addEventListener('touchend', (e) => {
-    e.preventDefault()
-    showYesScreen()
-  })
-
-  // No button: flee on any interaction.
-  // touchstart with preventDefault stops the tap from ever registering on mobile.
-  btnNo.addEventListener('touchstart', (e) => {
-    e.preventDefault()
-    fleeNoButton(btnNo)
-  })
-
-  btnNo.addEventListener('click', (e) => {
-    e.preventDefault()
-    fleeNoButton(btnNo)
-  })
-
-  // Main animation loop
-  requestAnimationFrame(() => gameLoop(btnYes, btnNo))
 }
 
 function placeNoButton(btn) {
