@@ -302,13 +302,14 @@ body {
 }
 
 @keyframes heartBackflip {
-  0% { transform: scale(1) rotateX(0deg); }
-  10% { transform: scale(1.1) rotateX(0deg); }
-  20% { transform: scale(1.12) translateY(-25px) rotateX(0deg); }
-  55% { transform: scale(1.12) translateY(-25px) rotateX(360deg); }
-  70% { transform: scale(1.05) translateY(0) rotateX(360deg); }
-  85% { transform: scale(1) rotateX(360deg); }
-  100% { transform: scale(1) rotateX(360deg); }
+  0% { transform: scale(1) translateY(0); }
+  10% { transform: scale(1.1) translateY(0); }
+  20% { transform: scale(1.12, 1.12) translateY(-30px); }
+  35% { transform: scale(1.1, 0.05) translateY(-30px); }
+  50% { transform: scale(1.12, -1.12) translateY(-30px); }
+  65% { transform: scale(1.1, 0.05) translateY(-30px); }
+  75% { transform: scale(1.05, 1.05) translateY(0); }
+  100% { transform: scale(1) translateY(0); }
 }
 
 .yes-text {
