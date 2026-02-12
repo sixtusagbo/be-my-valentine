@@ -113,7 +113,7 @@ function showEnvelope(onOpen) {
         <div class="envelope-front"></div>
         <div class="envelope-flap" id="flap"></div>
       </div>
-      <div class="envelope-hint" id="envelopeHint">Swipe up to open</div>
+      <div class="envelope-hint" id="envelopeHint">Tap to open</div>
     </div>
   `
 
@@ -123,46 +123,25 @@ function showEnvelope(onOpen) {
   const flap = document.getElementById('flap')
   const letter = document.getElementById('letter')
   const hint = document.getElementById('envelopeHint')
-  let startY = 0
-  let progress = 0
-  let opened = false
 
-  function onStart(y) {
-    startY = y
+  function open() {
+    // Warm up audio context on user gesture
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+
+    hint.style.opacity = '0'
+    flap.style.transition = 'transform 0.6s ease-out'
+    letter.style.transition = 'transform 0.6s ease-out 0.3s'
+    flap.style.transform = 'rotateX(180deg)'
+    letter.style.transform = 'translateY(-80%)'
+
+    setTimeout(() => {
+      scene.classList.add('envelope-exit')
+      setTimeout(onOpen, 600)
+    }, 800)
   }
 
-  function onMove(y) {
-    if (opened) return
-    const delta = startY - y
-    progress = Math.max(0, Math.min(1, delta / 150))
-    flap.style.transform = `rotateX(${progress * 180}deg)`
-    letter.style.transform = `translateY(${-progress * 80}%)`
-    if (progress > 0.1) hint.style.opacity = '0'
-  }
-
-  function onEnd() {
-    if (opened) return
-    if (progress > 0.5) {
-      opened = true
-      flap.style.transform = 'rotateX(180deg)'
-      letter.style.transform = 'translateY(-80%)'
-      setTimeout(() => {
-        scene.classList.add('envelope-exit')
-        setTimeout(onOpen, 600)
-      }, 400)
-    } else {
-      flap.style.transform = 'rotateX(0deg)'
-      letter.style.transform = 'translateY(0)'
-      hint.style.opacity = '1'
-    }
-  }
-
-  scene.addEventListener('pointerdown', (e) => onStart(e.clientY))
-  scene.addEventListener('pointermove', (e) => onMove(e.clientY))
-  scene.addEventListener('pointerup', onEnd)
-  scene.addEventListener('touchstart', (e) => onStart(e.touches[0].clientY), { passive: true })
-  scene.addEventListener('touchmove', (e) => onMove(e.touches[0].clientY), { passive: true })
-  scene.addEventListener('touchend', onEnd)
+  scene.addEventListener('click', open, { once: true })
+  scene.addEventListener('touchend', (e) => { e.preventDefault(); open() }, { once: true })
 }
 
 function init() {
@@ -255,6 +234,15 @@ function immediateFleeCheck(btn) {
   }
 }
 
+function overlapsYes(x, y, bw, bh) {
+  const yesBtn = document.getElementById('btnYes')
+  if (!yesBtn) return false
+  const r = yesBtn.getBoundingClientRect()
+  const margin = 20
+  return !(x + bw < r.left - margin || x > r.right + margin ||
+           y + bh < r.top - margin || y > r.bottom + margin)
+}
+
 function fleeNoButton(btn) {
   const w = window.innerWidth
   const h = window.innerHeight
@@ -269,7 +257,7 @@ function fleeNoButton(btn) {
   const yesBtn = document.getElementById('btnYes')
   yesBtn.style.transform = `scale(${yesScale})`
 
-  // Pick a random spot far from pointer
+  // Pick a random spot far from pointer and Yes button
   let newX, newY, dist
   let attempts = 0
 
@@ -278,7 +266,7 @@ function fleeNoButton(btn) {
     newY = pad + Math.random() * (h - bh - pad * 2)
     dist = Math.hypot(newX - pointerX, newY - pointerY)
     attempts++
-  } while (dist < 200 && attempts < 50)
+  } while ((dist < 200 || overlapsYes(newX, newY, bw, bh)) && attempts < 50)
 
   noX = newX
   noY = newY
@@ -324,6 +312,8 @@ function gameLoop(btnYes, btnNo) {
       if (newX > w - bw - pad) newX = w - bw - pad - Math.random() * 100
       if (newY < pad) newY = pad + Math.random() * 100
       if (newY > h - bh - pad) newY = h - bh - pad - Math.random() * 100
+
+      if (overlapsYes(newX, newY, bw, bh)) return
 
       noX = newX
       noY = newY
