@@ -43,11 +43,36 @@ function typeText(element, text, callback) {
   }, 80)
 }
 
+// Cursor heart trail
+function initHeartTrail() {
+  const trailHearts = ['💙', '🩵', '💎']
+  let lastSpawn = 0
+
+  function spawnTrailHeart(x, y) {
+    const now = Date.now()
+    if (now - lastSpawn < 60) return
+    lastSpawn = now
+
+    const heart = document.createElement('span')
+    heart.className = 'trail-heart'
+    heart.textContent = trailHearts[Math.floor(Math.random() * trailHearts.length)]
+    heart.style.left = `${x}px`
+    heart.style.top = `${y}px`
+    heart.style.fontSize = `${10 + Math.random() * 12}px`
+    document.body.appendChild(heart)
+    setTimeout(() => heart.remove(), 1000)
+  }
+
+  document.addEventListener('pointermove', (e) => spawnTrailHeart(e.clientX, e.clientY))
+  document.addEventListener('touchmove', (e) => {
+    spawnTrailHeart(e.touches[0].clientX, e.touches[0].clientY)
+  }, { passive: true })
+}
+
 function init() {
   const app = document.querySelector('#app')
 
   app.innerHTML = `
-    <div class="heart-bg" id="heartBg"></div>
     <div class="content">
       <h1 class="question"></h1>
       <div class="buttons hidden" id="buttons">
@@ -62,7 +87,7 @@ function init() {
   const question = document.querySelector('.question')
   const buttons = document.getElementById('buttons')
 
-  spawnFloatingHearts()
+  initHeartTrail()
 
   // Type out the question, then reveal buttons
   typeText(question, 'Will you be my Valentine?', () => {

@@ -289,3 +289,22 @@ body {
     opacity: 0;
   }
 }
+
+/* Cursor heart trail */
+.trail-heart {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1000;
+  animation: trailFade 1s ease-out forwards;
+}
+
+@keyframes trailFade {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-30px) scale(0.3);
+    opacity: 0;
+  }
+}
